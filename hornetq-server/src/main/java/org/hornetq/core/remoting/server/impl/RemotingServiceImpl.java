@@ -227,6 +227,10 @@ public class RemotingServiceImpl implements RemotingService, ConnectionLifeCycle
       {
          try
          {
+            HornetQServerLogger.LOGGER.info("Current thread: " + Thread.currentThread());
+            HornetQServerLogger.LOGGER.info("TCCL from above: " + tccl);
+            HornetQServerLogger.LOGGER.info("Loader: " + loader);
+            HornetQServerLogger.LOGGER.info("Info: " + info);
             Class<?> clazz = loader.loadClass(info.getFactoryClassName());
 
             AcceptorFactory factory = (AcceptorFactory) clazz.newInstance();
