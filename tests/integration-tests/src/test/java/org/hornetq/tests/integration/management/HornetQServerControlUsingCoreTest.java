@@ -65,7 +65,7 @@ public class HornetQServerControlUsingCoreTest extends HornetQServerControlTest
 
       locator = HornetQClient.createServerLocatorWithoutHA(new TransportConfiguration(UnitTestCase.INVM_CONNECTOR_FACTORY));
       ClientSessionFactory sf = createSessionFactory(locator);
-      session = sf.createSession(false, true, true);
+      session = sf.createSession("user", "password", false, true, true, false, HornetQClient.DEFAULT_ACK_BATCH_SIZE);
       session.start();
 
    }

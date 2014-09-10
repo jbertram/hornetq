@@ -15,6 +15,7 @@ package org.hornetq.core.settings.impl;
 import java.util.regex.Pattern;
 
 import org.hornetq.core.server.HornetQMessageBundle;
+import org.hornetq.core.server.HornetQServerLogger;
 
 /**
     a Match is the holder for the match string and the object to hold against it.
@@ -54,6 +55,7 @@ public class Match<T>
          actMatch = actMatch.replace(Match.WILDCARD, Match.WILDCARD_REPLACEMENT);
          actMatch = actMatch.replace(Match.WORD_WILDCARD, Match.WORD_WILDCARD_REPLACEMENT);
       }
+      HornetQServerLogger.LOGGER.info("Compiling regex for " + match + ": " + actMatch);
       pattern = Pattern.compile(actMatch);
 
    }

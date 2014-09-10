@@ -15,7 +15,9 @@ package org.hornetq.tests.integration.management;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.hornetq.api.core.SimpleString;
 import org.hornetq.api.core.TransportConfiguration;
@@ -38,6 +40,7 @@ import org.hornetq.core.config.Configuration;
 import org.hornetq.core.messagecounter.impl.MessageCounterManagerImpl;
 import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
+import org.hornetq.core.security.Role;
 import org.hornetq.core.server.HornetQServer;
 import org.hornetq.core.server.HornetQServers;
 import org.hornetq.core.settings.impl.SlowConsumerPolicy;
@@ -1065,11 +1068,27 @@ public class HornetQServerControlTest extends ManagementTestBase
                                                    RandomUtil.randomString());
 
       conf = createDefaultConfig(false);
-      conf.setSecurityEnabled(false);
+      conf.setSecurityEnabled(true);
       conf.setJMXManagementEnabled(true);
       conf.getAcceptorConfigurations().clear();
       conf.getAcceptorConfigurations().add(new TransportConfiguration(InVMAcceptorFactory.class.getName()));
       server = HornetQServers.newHornetQServer(conf, mbeanServer, true);
+      server.getSecurityManager().addUser("user", "password");
+      Role genericRole = new Role("genericRole", true, true, false, false, true, true, false);
+      Set<Role> roles = new HashSet<Role>();
+      roles.add(genericRole);
+      server.getSecurityRepository().addMatch("#", roles);
+      server.getSecurityManager().addRole("user", "genericRole");
+      Role specificRole = new Role("specificRole", true, true, false, false, true, true, true);
+      roles = new HashSet<Role>();
+      roles.add(specificRole);
+      server.getSecurityRepository().addMatch("jms.queue.hornetq.management.#", roles);
+      server.getSecurityManager().addRole("user", "specificRole");
+//      Role specificRole2 = new Role("specificRole2", true, true, false, false, false, false, true);
+//      roles = new HashSet<Role>();
+//      roles.add(specificRole2);
+//      server.getSecurityRepository().addMatch("jms.queue.hornetq.management", roles);
+//      server.getSecurityManager().addRole("user", "specificRole2");
       conf.getConnectorConfigurations().put(connectorConfig.getName(), connectorConfig);
       server.start();
    }
