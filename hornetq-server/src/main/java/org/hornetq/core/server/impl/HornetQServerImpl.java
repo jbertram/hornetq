@@ -22,6 +22,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.nio.channels.ClosedChannelException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -132,6 +134,7 @@ import org.hornetq.core.server.JournalType;
 import org.hornetq.core.server.LargeServerMessage;
 import org.hornetq.core.server.LiveNodeLocator;
 import org.hornetq.core.server.MemoryManager;
+import org.hornetq.core.server.NetworkHealthCheck;
 import org.hornetq.core.server.NodeManager;
 import org.hornetq.core.server.Queue;
 import org.hornetq.core.server.QueueFactory;
@@ -2519,6 +2522,24 @@ public class HornetQServerImpl implements HornetQServer
       {
          try
          {
+            NetworkHealthCheck networkHealthCheck = new NetworkHealthCheck(System.getProperty(NetworkHealthCheck.NIC_NAME_SYSTEM_PROP, null),
+                                                                           scheduledPool,
+                                                                           threadPool,
+                                                                           Long.parseLong(System.getProperty(NetworkHealthCheck.CHECK_PERIOD_SYSTEM_PROP, NetworkHealthCheck.DEFAULT_CHECK_PERIOD.toString())),
+                                                                           Integer.parseInt(System.getProperty(NetworkHealthCheck.TIMEOUT_SYSTEM_PROP, NetworkHealthCheck.DEFAULT_TIMEOUT.toString())));
+
+            String addressListProperty = System.getProperty(NetworkHealthCheck.ADDRESS_LIST_SYSTEM_PROP);
+            if (addressListProperty != null) {
+               String[] addresses = addressListProperty.split(",");
+               for (String address : addresses) {
+                  networkHealthCheck.addAddress(InetAddress.getByName(address));
+               }
+
+               if (!networkHealthCheck.check()) {
+                  return;
+               }
+            }
+
             synchronized (HornetQServerImpl.this)
             {
                state = SERVER_STATE.STARTED;

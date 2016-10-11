@@ -31,9 +31,18 @@ import java.util.concurrent.TimeUnit;
 import org.jboss.logging.Logger;
 
 /** This will use {@link InetAddress#isReachable(int)} to determine if the network is alive.
- *  It will have a set of addresses, and if any address is reached the network will be considered alvie. */
+ *  It will have a set of addresses, and if any address is reached the network will be considered alive. */
 public class NetworkHealthCheck extends ActiveMQScheduledComponent
 {
+
+   private static final String PREFIX = "org.apache.activemq.artemis.networkhealthcheck.";
+
+   public static final String NIC_NAME_SYSTEM_PROP = PREFIX + "nicName";
+   public static final String CHECK_PERIOD_SYSTEM_PROP = PREFIX + "checkPeriod";
+   public static final Long DEFAULT_CHECK_PERIOD = 5000L;
+   public static final String TIMEOUT_SYSTEM_PROP = PREFIX + "timeout";
+   public static final Integer DEFAULT_TIMEOUT = 5;
+   public static final String ADDRESS_LIST_SYSTEM_PROP = PREFIX + "addressList";
 
    private static final Logger logger = Logger.getLogger(NetworkHealthCheck.class);
 
