@@ -98,7 +98,11 @@ public class ClusteredDurableSubscriptionExample extends HornetQExample
 
          MessageConsumer subscriber0 = session0.createDurableSubscriber(topic, subscriptionName);
 
+         subscriber0.close();
+
          MessageConsumer subscriber1 = session1.createDurableSubscriber(topic, subscriptionName);
+
+         subscriber1.close();
 
          Thread.sleep(1000);
 
@@ -118,18 +122,16 @@ public class ClusteredDurableSubscriptionExample extends HornetQExample
             System.out.println("Sent message: " + message.getText());
          }
 
-         // Step 14. We now consume those messages on *both* server 0 and server 1.
+         // Step 14. We now consume those messages on *only* server 1.
          // Note that the messages have been load-balanced between the two nodes, with some
          // messages on node 0 and others on node 1.
          // The "logical" subscription is distributed across the cluster an contains exactly one copy of all the
-         // messages
+         // messages. Messages are redistributed to server 1 from server 0
 
-         for (int i = 0; i < numMessages; i += 2)
+         subscriber1 = session1.createDurableSubscriber(topic, subscriptionName);
+
+         for (int i = 0; i < numMessages; i++)
          {
-            TextMessage message0 = (TextMessage)subscriber0.receive(5000);
-
-            System.out.println("Got message: " + message0.getText() + " from node 0");
-
             TextMessage message1 = (TextMessage)subscriber1.receive(5000);
 
             System.out.println("Got message: " + message1.getText() + " from node 1");

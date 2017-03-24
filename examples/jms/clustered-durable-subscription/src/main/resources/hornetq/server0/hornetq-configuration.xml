@@ -52,7 +52,7 @@
          <connector-ref>netty-connector</connector-ref>
          <retry-interval>500</retry-interval>
          <use-duplicate-detection>true</use-duplicate-detection>
-         <forward-when-no-consumers>true</forward-when-no-consumers>
+         <forward-when-no-consumers>false</forward-when-no-consumers>
          <max-hops>1</max-hops>
          <discovery-group-ref discovery-group-name="my-discovery-group"/>
       </cluster-connection>
@@ -71,5 +71,11 @@
          <permission type="send" roles="guest"/>
       </security-setting>
    </security-settings>
+
+   <address-settings>
+      <address-setting match="#">
+         <redistribution-delay>0</redistribution-delay>
+      </address-setting>
+   </address-settings>
    
 </configuration>
